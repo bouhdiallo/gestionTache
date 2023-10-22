@@ -26,7 +26,6 @@ if (isset($_POST['creation'])) {
 }
 
 
-/*
 // on vérifie si les champs sont définis pour la connexion 
 if(isset($_POST['connexion'])) {
     $nom_utilisateur =$_POST['user'];
@@ -55,7 +54,7 @@ if(isset($_POST['connexion'])) {
       } else {
        echo "ce compte n'existe pas, va t'inscrire";
       }
-}*/
+}
 
 ?>
 <!DOCTYPE html>
