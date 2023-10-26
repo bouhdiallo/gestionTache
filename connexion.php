@@ -1,13 +1,13 @@
 <?php
 session_start();
-$_SESSION['c'] = array();
+//$_SESSION['c'] = array();
 
 $servername = 'localhost';
 $username = 'root';
 $database = 'gestiontache';
 $password = '';
 // on établit la connexion avec la base de données
-    $conn = new PDO("mysql:host=$servername;dbname=$database", $username, $password);
+    $db = new PDO("mysql:host=$servername;dbname=$database", $username, $password);
 // on vérifie si les champs sont définis
 if (isset($_POST['creation'])) {
     $nom_utilisateur = $_POST['utilisateur'];
@@ -16,7 +16,7 @@ if (isset($_POST['creation'])) {
 
     $sql1 = ("INSERT INTO utilisateur (nom, adressMail, motPss) VALUES (:nom,:adressMail,:motPss)");
     // préparons la requête
-    $inscription = $conn->prepare($sql1);
+    $inscription = $db->prepare($sql1);
     // on attribue les espaces réservés à des valeurs
     $inscription->bindParam(':nom', $nom_utilisateur);
     $inscription->bindParam(':adressMail', $adress_mail);
@@ -25,32 +25,29 @@ if (isset($_POST['creation'])) {
     $inscription->execute();
 }
 
-
 // on vérifie si les champs sont définis pour la connexion 
 if(isset($_POST['connexion'])) {
     $nom_utilisateur =$_POST['user'];
     $mot_de_pass = $_POST['pass'];
 
     $sql2 = ("SELECT * FROM utilisateur WHERE nom = :user AND motPss = :pass") ;
-
     //on prepare la requete
-    $connect = $conn->prepare($sql2);
+    $connect = $db->prepare($sql2);
     //on lie les parametres avec des valeurs
     $connect->bindParam(':user',$nom_utilisateur);
     $connect->bindParam(':pass',$mot_de_pass);
 
     //on execute la requete
     $connect->execute();
-
     //on recupere les resultats 
    $resultat=$connect->fetch(PDO::FETCH_ASSOC); 
-   
+   //var_dump($resultat);
+   //die();
    // on recupere le resusltat qu'on met dans la session
-      $_SESSION['c'][] = $resultat;
-   
+      $_SESSION['c'] = $resultat;
       if($resultat) {
-      header('location:gestiontaches.php');
-       exit;
+      header('Location:gestiontaches.php');
+      exit;
       } else {
        echo "ce compte n'existe pas, va t'inscrire";
       }

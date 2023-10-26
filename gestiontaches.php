@@ -1,4 +1,14 @@
+<?php
+session_start();
 
+
+
+
+
+
+
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,25 +23,24 @@
       </div>
       </body>
 </html>
-      
       <?php
 $servername = 'localhost';
 $username = 'root';
 $database = 'gestiontache';
 $password = '';
-
 // Établir la connexion avec la base de données
 $db = new PDO("mysql:host=$servername;dbname=$database", $username, $password);
 
 if (isset($_POST['ajouter'])) {
-    // Traitez l'ajout de la tâche dans la base de données (comme vous l'avez fait précédemment)
+    // Traitez l'ajout de la tâche dans la base de données
     $nomTache = $_POST['titre'];
     $description = $_POST['desc'];
     $dateEcheance = $_POST['dateEcheance'];
     $priorite = $_POST['priorite'];
     $statut = $_POST['statut'];
     //on defini l'identifiant de l'utilisateur
-    $id_utilisateur = 1;
+    $id_utilisateur = $_SESSION['c']["id_utilisateur"];
+    //$id_utilisateur = $_SESSION['c'][0];
     //on fait l'insertion
      $sql3 = ("INSERT INTO taches (nomTache, description, dateEcheance, priorite, etat,id_utilisateur) VALUES (:titre,:desc,:dateEcheance,:priorite,:statut,:id_utilisateur)");
     //on prepare la requete
@@ -45,19 +54,34 @@ $gestion->bindParam(':statut',$statut);
 $gestion->bindParam(':id_utilisateur', $id_utilisateur);
 
 if ($gestion->execute()){ 
-    // Après avoir ajouté la tâche, affichez un bouton "Voir les détails"
-   echo '<div class="vente">';
+    
+
+    // Après avoir ajouté la tâche, affichons un bouton "Voir les détails".
+    echo '<div class="vente">';
     echo '<h2>' . $_POST['titre'] . '</h2>';
     echo '<p>' . $_POST['desc'] . '</p>';
     echo '<h6>Priorité : ' . $_POST['priorite'] . '</h6>';
     echo '<h5>Statut : ' . $_POST['statut'] . '</h5>';
     echo '<form method="post" action="">';
-    //echo '<input type="hidden" name="tache_id" value="' . $db->lastInsertId() . '">';
-    echo '<input type="submit" class="detail" name="voir" value="Voir les détails">';
+    echo '<input type="submit" class="detail" name="voir" value="Voir">';
     echo '</form>';
-   echo '</div>';
+    echo '</div>';
 }
  }
+
+
+        if (isset($_POST['voir'])) {
+            $id_utilisateur = $_SESSION['c']["id_utilisateur"];
+        
+            $sql4 = "SELECT * FROM taches WHERE id_utilisateur = :id_utilisateur";
+            $detail = $db->prepare($sql4);
+            $detail->bindParam(':id_utilisateur', $id_utilisateur);
+            $detail->execute();
+            $affichage = $detail->fetch(PDO::FETCH_ASSOC);
+            $_SESSION['result'] = $affichage;
+            header('Location:details.php');
+        }
+    
 ?>
 <!DOCTYPE html>
 <html lang="en">
